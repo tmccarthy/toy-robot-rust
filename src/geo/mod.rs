@@ -1,5 +1,5 @@
 #[derive(Debug, Eq, PartialEq)]
-enum Direction {
+pub enum Direction {
     North,
     South,
     East,
@@ -7,7 +7,7 @@ enum Direction {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-enum RelativeDirection {
+pub enum RelativeDirection {
     Left,
     Right,
 }
@@ -16,7 +16,7 @@ use RelativeDirection::{*};
 use Direction::{*};
 
 impl Direction {
-    fn rotate(&self, relative_direction: RelativeDirection) -> Direction {
+    pub fn rotate(&self, relative_direction: RelativeDirection) -> Direction {
         match (self, relative_direction) {
             (North, Left) => West,
             (West, Left) => South,
@@ -31,14 +31,14 @@ impl Direction {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-struct Vector {
-    x: i16,
-    y: i16,
+pub struct Vector {
+    pub x: i16,
+    pub y: i16,
 }
 
 impl Vector {
 
-    fn translate(&self, direction: Direction) -> Vector {
+    pub fn translate(&self, direction: Direction) -> Vector {
         match direction {
             North => Vector { y: self.y + 1, ..(*self) },
             South => Vector { y: self.y - 1, ..(*self) },
@@ -52,7 +52,6 @@ impl Vector {
 #[cfg(test)]
 mod tests {
 
-    #[cfg(test)]
     mod rotate {
         use crate::geo::Direction::{*};
         use crate::geo::RelativeDirection::{*};
