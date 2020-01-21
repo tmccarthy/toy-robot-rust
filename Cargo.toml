@@ -1,5 +1,5 @@
 [package]
-name = "rust-n-body"
+name = "rust-toy-robot"
 version = "0.1.0"
 authors = ["Timothy McCarthy <ebh042@gmail.com>"]
 edition = "2018"
