@@ -1,5 +1,6 @@
 use crate::commands::Command;
 use crate::game_model::{Board, Robot};
+use crate::geo::Vector;
 
 pub fn update_board_from_command(board: &Board, command: &Command) -> Board {
     return match (board.robot, &command) {
@@ -26,8 +27,32 @@ pub fn output_from_command(board: &Board, command: &Command) -> Option<String> {
         (Some(robot), Command::Report) => Some(
             format!("{},{},{}", robot.location.x, robot.location.y, robot.facing).to_uppercase(),
         ),
+        (_, Command::Map) => Some(map_for(board)),
         (_, _) => None,
     };
+}
+
+fn map_for(board: &Board) -> String {
+    let mut s: String = String::new();
+
+    for y in ((board.bounds.bottom_left.y)..=(board.bounds.top_right.y)).rev() {
+        for x in (board.bounds.bottom_left.x)..=(board.bounds.top_right.y) {
+            let our_vector = Vector::new(x, y);
+
+            if board.robot.map_or_else(|| false, |r| r.location == our_vector) {
+                s.push('0');
+            } else if board.obstacle_locations.contains(&our_vector) {
+                s.push('X');
+            } else {
+                s.push('0');
+            }
+        }
+        s.push('\n');
+    }
+
+    s.pop();
+
+    s
 }
 
 pub fn is_board_valid(board: &Board) -> bool {
@@ -249,6 +274,23 @@ mod test {
 
             let board = empty_board().with_robot(Robot::new(Vector::new(1, 1), North));
             let expected_output = Some("1,1,NORTH".to_string());
+
+            assert_eq!(expected_output, output_from_command(&board, &command))
+        }
+
+        #[test]
+        fn output_map() {
+            let command = Command::Map;
+
+            let board = empty_board()
+                .with_robot(Robot::new(Vector::new(1, 1), North))
+                .with_obstacle_at(Vector::new(4, 4))
+                .with_obstacle_at(Vector::new(1, 2));
+            let expected_output = Some("0000X\n\
+                                        00000\n\
+                                        0X000\n\
+                                        00000\n\
+                                        00000".to_string());
 
             assert_eq!(expected_output, output_from_command(&board, &command))
         }
