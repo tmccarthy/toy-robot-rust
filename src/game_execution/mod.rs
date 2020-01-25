@@ -33,7 +33,7 @@ pub fn output_from_command(board: &Board, command: &Command) -> Option<String> {
 pub fn is_board_valid(board: &Board) -> bool {
     board
         .robot
-        .map_or(true, |robot| board.bounds.contains(&robot.location))
+        .map_or(true, |robot| board.bounds.contains(&robot.location) && !board.obstacle_locations.contains(&robot.location))
 }
 
 #[cfg(test)]
@@ -279,6 +279,16 @@ mod test {
         fn validate_with_robot() {
             let board = empty_board().with_robot(Robot::new(Vector::new(1, 1), North));
             let expected_valid = true;
+
+            assert_eq!(expected_valid, is_board_valid(&board),)
+        }
+
+        #[test]
+        fn validate_with_robot_on_obstacle() {
+            let board = empty_board()
+                .with_robot(Robot::new(Vector::new(1, 1), North))
+                .with_obstacle_at(Vector::new(1, 1));
+            let expected_valid = false;
 
             assert_eq!(expected_valid, is_board_valid(&board),)
         }
