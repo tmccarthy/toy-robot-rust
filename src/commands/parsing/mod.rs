@@ -4,7 +4,7 @@ use crate::geo::RelativeDirection::*;
 use crate::geo::{Direction, Vector};
 
 use super::Command;
-use std::fmt::{Formatter, Error};
+use std::fmt::{Error, Formatter};
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum ParsingError {
@@ -28,6 +28,7 @@ pub fn parse(input: &str) -> Result<Command, ParsingError> {
         "move" => return Ok(Move),
         "left" => return Ok(Rotate(Left)),
         "right" => return Ok(Rotate(Right)),
+        "report" => return Ok(Report),
         _ => {}
     }
 
@@ -95,13 +96,24 @@ mod test {
     }
 
     #[test]
+    fn parse_report() {
+        assert_eq!(parse("Report"), Ok(Report))
+    }
+
+    #[test]
     fn parse_place_wrong_num_args() {
-        assert_eq!(parse("Place 1,ASDF"), Err(BadPlaceParameters("1,ASDF".to_string())))
+        assert_eq!(
+            parse("Place 1,ASDF"),
+            Err(BadPlaceParameters("1,ASDF".to_string()))
+        )
     }
 
     #[test]
     fn parse_place_bad_direction() {
-        assert_eq!(parse("Place 1,1,ASDF"), Err(BadPlaceParameters("1,1,ASDF".to_string())))
+        assert_eq!(
+            parse("Place 1,1,ASDF"),
+            Err(BadPlaceParameters("1,1,ASDF".to_string()))
+        )
     }
 
     #[test]

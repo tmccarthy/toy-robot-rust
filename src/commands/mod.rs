@@ -1,4 +1,4 @@
-mod parsing;
+pub mod parsing;
 
 use crate::geo::{Direction, RelativeDirection, Vector};
 
