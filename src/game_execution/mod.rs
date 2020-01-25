@@ -14,6 +14,7 @@ pub fn update_board_from_command(board: &Board, command: &Command) -> Board {
         (Some(robot), Command::Rotate(relative_direction)) => {
             board.with_robot(robot.with_facing(robot.facing.rotate(relative_direction)))
         }
+        (Some(robot), Command::PlaceObject) => unimplemented!(),
         (Some(_robot), Command::Report) => *board,
     };
 }

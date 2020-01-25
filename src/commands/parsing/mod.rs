@@ -30,6 +30,7 @@ pub fn parse_command(input: &str) -> Result<Command, ParsingError> {
         "left" => return Ok(Rotate(Left)),
         "right" => return Ok(Rotate(Right)),
         "report" => return Ok(Report),
+        "place_object" => return Ok(PlaceObject),
         _ => {}
     }
 
@@ -99,6 +100,11 @@ mod test {
     #[test]
     fn parse_report() {
         assert_eq!(parse_command("Report"), Ok(Report))
+    }
+
+    #[test]
+    fn parse_place_object() {
+        assert_eq!(parse_command("Place_Object"), Ok(PlaceObject))
     }
 
     #[test]
