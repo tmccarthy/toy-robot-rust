@@ -4,11 +4,21 @@ use crate::geo::RelativeDirection::*;
 use crate::geo::{Direction, Vector};
 
 use super::Command;
+use std::fmt::{Formatter, Error};
 
 #[derive(Debug, Eq, PartialEq)]
-pub enum ParsingError<'a> {
-    UnrecognisedCommand(&'a str),
-    BadPlaceParameters(&'a str),
+pub enum ParsingError {
+    UnrecognisedCommand(String),
+    BadPlaceParameters(String),
+}
+
+impl std::fmt::Display for ParsingError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        match self {
+            UnrecognisedCommand(command) => write!(f, "Unrecognised command: {}", command),
+            BadPlaceParameters(command) => write!(f, "Bad PLACE parameters: {}", command),
+        }
+    }
 }
 
 pub fn parse(input: &str) -> Result<Command, ParsingError> {
@@ -26,7 +36,7 @@ pub fn parse(input: &str) -> Result<Command, ParsingError> {
     if lowercase_input.starts_with(PLACE_PREFIX) {
         parse_place_command(input[(PLACE_PREFIX.len())..].as_ref())
     } else {
-        Err(UnrecognisedCommand(input))
+        Err(UnrecognisedCommand(input.to_string()))
     }
 }
 
@@ -44,9 +54,9 @@ fn parse_place_command(parameters: &str) -> Result<Command, ParsingError> {
 
             maybe_location
                 .and_then(|location| maybe_facing.map(|facing| Command::Place { location, facing }))
-                .ok_or(BadPlaceParameters(parameters))
+                .ok_or(BadPlaceParameters(parameters.to_string()))
         }
-        _ => Err(BadPlaceParameters(parameters)),
+        _ => Err(BadPlaceParameters(parameters.to_string())),
     }
 }
 
@@ -86,12 +96,12 @@ mod test {
 
     #[test]
     fn parse_place_wrong_num_args() {
-        assert_eq!(parse("Place 1,ASDF"), Err(BadPlaceParameters("1,ASDF")))
+        assert_eq!(parse("Place 1,ASDF"), Err(BadPlaceParameters("1,ASDF".to_string())))
     }
 
     #[test]
     fn parse_place_bad_direction() {
-        assert_eq!(parse("Place 1,1,ASDF"), Err(BadPlaceParameters("1,1,ASDF")))
+        assert_eq!(parse("Place 1,1,ASDF"), Err(BadPlaceParameters("1,1,ASDF".to_string())))
     }
 
     #[test]
@@ -140,6 +150,6 @@ mod test {
 
     #[test]
     fn parse_unrecognised() {
-        assert_eq!(parse("asdf"), Err(UnrecognisedCommand("asdf")))
+        assert_eq!(parse("asdf"), Err(UnrecognisedCommand("asdf".to_string())))
     }
 }
