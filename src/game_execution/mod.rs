@@ -17,7 +17,7 @@ pub fn update_board_from_command(board: &Board, command: &Command) -> Board {
         (Some(robot), Command::PlaceObject) => {
             board.with_obstacle_at(robot.location.translate(robot.facing))
         }
-        (Some(_robot), Command::Report) => board.clone(),
+        (Some(_robot), _) => board.clone(),
     };
 }
 

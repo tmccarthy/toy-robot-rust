@@ -31,6 +31,7 @@ pub fn parse_command(input: &str) -> Result<Command, ParsingError> {
         "right" => return Ok(Rotate(Right)),
         "report" => return Ok(Report),
         "place_object" => return Ok(PlaceObject),
+        "map" => return Ok(Map),
         _ => {}
     }
 
@@ -105,6 +106,11 @@ mod test {
     #[test]
     fn parse_place_object() {
         assert_eq!(parse_command("Place_Object"), Ok(PlaceObject))
+    }
+
+    #[test]
+    fn parse_map() {
+        assert_eq!(parse_command("Map"), Ok(Map))
     }
 
     #[test]

@@ -9,4 +9,5 @@ pub enum Command {
     Move,
     Rotate(RelativeDirection),
     Report,
+    Map,
 }
