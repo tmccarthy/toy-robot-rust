@@ -21,7 +21,7 @@ impl std::fmt::Display for ParsingError {
     }
 }
 
-pub fn parse(input: &str) -> Result<Command, ParsingError> {
+pub fn parse_command(input: &str) -> Result<Command, ParsingError> {
     let lowercase_input = input.to_lowercase();
 
     match lowercase_input.as_ref() {
@@ -73,7 +73,7 @@ fn parse_direction(raw_direction: &str) -> Option<Direction> {
 
 #[cfg(test)]
 mod test {
-    use crate::commands::parsing::parse;
+    use crate::commands::parsing::parse_command;
     use crate::commands::parsing::ParsingError::*;
     use crate::commands::Command::*;
     use crate::geo::Direction::*;
@@ -82,28 +82,28 @@ mod test {
 
     #[test]
     fn parse_move() {
-        assert_eq!(parse("Move"), Ok(Move))
+        assert_eq!(parse_command("Move"), Ok(Move))
     }
 
     #[test]
     fn parse_left() {
-        assert_eq!(parse("Left"), Ok(Rotate(Left)))
+        assert_eq!(parse_command("Left"), Ok(Rotate(Left)))
     }
 
     #[test]
     fn parse_right() {
-        assert_eq!(parse("Right"), Ok(Rotate(Right)))
+        assert_eq!(parse_command("Right"), Ok(Rotate(Right)))
     }
 
     #[test]
     fn parse_report() {
-        assert_eq!(parse("Report"), Ok(Report))
+        assert_eq!(parse_command("Report"), Ok(Report))
     }
 
     #[test]
     fn parse_place_wrong_num_args() {
         assert_eq!(
-            parse("Place 1,ASDF"),
+            parse_command("Place 1,ASDF"),
             Err(BadPlaceParameters("1,ASDF".to_string()))
         )
     }
@@ -111,7 +111,7 @@ mod test {
     #[test]
     fn parse_place_bad_direction() {
         assert_eq!(
-            parse("Place 1,1,ASDF"),
+            parse_command("Place 1,1,ASDF"),
             Err(BadPlaceParameters("1,1,ASDF".to_string()))
         )
     }
@@ -119,7 +119,7 @@ mod test {
     #[test]
     fn parse_place_facing_north() {
         assert_eq!(
-            parse("Place 1,1,North"),
+            parse_command("Place 1,1,North"),
             Ok(Place {
                 location: Vector { x: 1, y: 1 },
                 facing: North
@@ -130,7 +130,7 @@ mod test {
     #[test]
     fn parse_place_facing_south() {
         assert_eq!(
-            parse("Place 1,1,South"),
+            parse_command("Place 1,1,South"),
             Ok(Place {
                 location: Vector { x: 1, y: 1 },
                 facing: South
@@ -141,7 +141,7 @@ mod test {
     #[test]
     fn parse_place_facing_east() {
         assert_eq!(
-            parse("Place 1,1,East"),
+            parse_command("Place 1,1,East"),
             Ok(Place {
                 location: Vector { x: 1, y: 1 },
                 facing: East
@@ -152,7 +152,7 @@ mod test {
     #[test]
     fn parse_place_facing_west() {
         assert_eq!(
-            parse("Place 1,1,West"),
+            parse_command("Place 1,1,West"),
             Ok(Place {
                 location: Vector { x: 1, y: 1 },
                 facing: West
@@ -162,6 +162,6 @@ mod test {
 
     #[test]
     fn parse_unrecognised() {
-        assert_eq!(parse("asdf"), Err(UnrecognisedCommand("asdf".to_string())))
+        assert_eq!(parse_command("asdf"), Err(UnrecognisedCommand("asdf".to_string())))
     }
 }

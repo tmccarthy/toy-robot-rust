@@ -7,6 +7,8 @@ use crate::game_model::Board;
 use crate::geo::Vector;
 use std::io;
 use std::io::prelude::*;
+use crate::commands::parsing::parse_command;
+use crate::game_execution::{output_from_command, update_board_from_command, is_board_valid};
 
 fn main() {
     let stdin = io::stdin();
@@ -16,17 +18,17 @@ fn main() {
     for line in stdin.lock().lines() {
         let raw_user_input = line.unwrap();
 
-        let command_or_error = crate::commands::parsing::parse(raw_user_input.as_str());
+        let command_or_error = parse_command(raw_user_input.as_str());
 
         command_or_error
             .map(|command| {
-                crate::game_execution::output_from_command(&board, &command).map(|output| {
+                output_from_command(&board, &command).map(|output| {
                     println!("{}", output);
                 });
 
-                let new_board = crate::game_execution::update_board_from_command(&board, &command);
+                let new_board = update_board_from_command(&board, &command);
 
-                if crate::game_execution::is_board_valid(&new_board) {
+                if is_board_valid(&new_board) {
                     board = new_board
                 };
             })
