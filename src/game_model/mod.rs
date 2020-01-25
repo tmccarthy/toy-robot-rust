@@ -1,18 +1,18 @@
-use crate::geo::{Direction, Vector};
+use crate::geo::{Direction, Vector, Square};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub struct Robot {
-    pub position: Vector,
+    pub location: Vector,
     pub facing: Direction,
 }
 
 impl Robot {
     pub fn new(position: Vector, facing: Direction) -> Robot {
-        Robot { position, facing }
+        Robot { location: position, facing }
     }
 
     pub fn with_position(self: Robot, position: Vector) -> Robot {
-        Robot { position, ..self }
+        Robot { location: position, ..self }
     }
 
     pub fn with_facing(self: Robot, facing: Direction) -> Robot {
@@ -22,14 +22,14 @@ impl Robot {
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub struct Board {
-    pub corner: Vector,
+    pub bounds: Square,
     pub robot: Option<Robot>,
 }
 
 impl Board {
-    pub fn empty_with_corner(corner: Vector) -> Board {
+    pub fn empty_with_corner(corner: &Vector) -> Board {
         Board {
-            corner,
+            bounds: Square::with_corners(&Vector::new(0, 0), corner),
             robot: None,
         }
     }

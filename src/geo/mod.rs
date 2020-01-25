@@ -65,6 +65,34 @@ impl Vector {
 
 }
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+pub struct Square {
+    pub bottom_left: Vector,
+    pub top_right: Vector,
+}
+
+impl Square {
+
+    pub fn with_corners(corner1: &Vector, corner2: &Vector) -> Square {
+        use std::cmp::{min, max};
+
+        let x_min = min(corner1.x, corner2.x);
+        let x_max = max(corner1.x, corner2.x);
+        let y_min = min(corner1.y, corner2.y);
+        let y_max = max(corner1.y, corner2.y);
+
+        Square {
+            bottom_left: Vector::new(x_min, y_min),
+            top_right: Vector::new(x_max, y_max),
+        }
+    }
+
+    pub fn contains(self: Square, vector: &Vector) -> bool {
+        vector.x >= self.bottom_left.x && vector.x <= self.top_right.x && vector.y >= self.bottom_left.y && vector.y <= self.top_right.y
+    }
+
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -141,7 +169,7 @@ mod tests {
 
     }
 
-    mod display {
+    mod direction_display {
         use crate::geo::Direction::{*};
 
         #[test]
@@ -162,6 +190,52 @@ mod tests {
         #[test]
         fn display_west() {
             assert_eq!("West", format!("{}", West))
+        }
+
+    }
+
+    mod square_contains {
+        use crate::geo::Vector;
+        use crate::geo::Square;
+
+        #[test]
+        fn contains_within_square() {
+            let square = Square::with_corners(&Vector::new(0, 0), &Vector::new(4, 4));
+            let vector = Vector::new(1, 1);
+
+            assert_eq!(true, square.contains(&vector));
+        }
+
+        #[test]
+        fn contains_out_of_bounds_north() {
+            let square = Square::with_corners(&Vector::new(0, 0), &Vector::new(4, 4));
+            let vector = Vector::new(1, 5);
+
+            assert_eq!(false, square.contains(&vector));
+        }
+
+        #[test]
+        fn contains_out_of_bounds_south() {
+            let square = Square::with_corners(&Vector::new(0, 0), &Vector::new(4, 4));
+            let vector = Vector::new(1, -1);
+
+            assert_eq!(false, square.contains(&vector));
+        }
+
+        #[test]
+        fn contains_out_of_bounds_east() {
+            let square = Square::with_corners(&Vector::new(0, 0), &Vector::new(4, 4));
+            let vector = Vector::new(5, 1);
+
+            assert_eq!(false, square.contains(&vector));
+        }
+
+        #[test]
+        fn contains_out_of_bounds_west() {
+            let square = Square::with_corners(&Vector::new(0, 0), &Vector::new(4, 4));
+            let vector = Vector::new(-1, 1);
+
+            assert_eq!(false, square.contains(&vector));
         }
 
     }
