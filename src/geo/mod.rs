@@ -1,3 +1,8 @@
+use std::fmt::{Error, Formatter};
+
+use Direction::*;
+use RelativeDirection::*;
+
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum Direction {
     North,
@@ -11,10 +16,6 @@ pub enum RelativeDirection {
     Left,
     Right,
 }
-
-use std::fmt::{Error, Formatter};
-use Direction::*;
-use RelativeDirection::*;
 
 impl Direction {
     pub fn rotate(&self, relative_direction: &RelativeDirection) -> Direction {
@@ -157,7 +158,6 @@ mod tests {
     }
 
     mod translate {
-
         use crate::geo::Direction::*;
         use crate::geo::Vector;
 

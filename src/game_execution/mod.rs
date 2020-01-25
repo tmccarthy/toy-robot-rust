@@ -35,12 +35,11 @@ pub fn is_board_valid(board: &Board) -> bool {
 
 #[cfg(test)]
 mod test {
-
     use crate::commands::Command;
     use crate::game_model::{Board, Robot};
+    use crate::geo::{Square, Vector};
     use crate::geo::Direction::*;
     use crate::geo::RelativeDirection::Left;
-    use crate::geo::{Square, Vector};
 
     const EMPTY_BOARD: Board = Board {
         bounds: Square {
@@ -51,14 +50,14 @@ mod test {
     };
 
     mod update_board {
-
-        use super::super::update_board_from_command;
-        use super::EMPTY_BOARD;
         use crate::commands::Command;
         use crate::game_model::{Board, Robot};
         use crate::geo::Direction::*;
         use crate::geo::RelativeDirection::Left;
         use crate::geo::Vector;
+
+        use super::EMPTY_BOARD;
+        use super::super::update_board_from_command;
 
         #[test]
         fn update_board_move_no_robot() {
@@ -175,14 +174,14 @@ mod test {
     }
 
     mod output {
-
-        use super::super::output_from_command;
-        use super::EMPTY_BOARD;
         use crate::commands::Command;
         use crate::game_model::{Board, Robot};
         use crate::geo::Direction::*;
         use crate::geo::RelativeDirection::Left;
         use crate::geo::Vector;
+
+        use super::EMPTY_BOARD;
+        use super::super::output_from_command;
 
         #[test]
         fn output_move_with_robot() {
@@ -216,14 +215,14 @@ mod test {
     }
 
     mod validate {
-
-        use super::super::is_board_valid;
-        use super::EMPTY_BOARD;
         use crate::commands::Command;
         use crate::game_model::{Board, Robot};
         use crate::geo::Direction::*;
         use crate::geo::RelativeDirection::Left;
         use crate::geo::Vector;
+
+        use super::EMPTY_BOARD;
+        use super::super::is_board_valid;
 
         #[test]
         fn validate_no_robot() {

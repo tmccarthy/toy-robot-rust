@@ -1,14 +1,15 @@
+use std::io;
+use std::io::prelude::*;
+
+use crate::commands::parsing::parse_command;
+use crate::game_execution::{is_board_valid, output_from_command, update_board_from_command};
+use crate::game_model::Board;
+use crate::geo::Vector;
+
 mod commands;
 mod game_execution;
 mod game_model;
 mod geo;
-
-use crate::game_model::Board;
-use crate::geo::Vector;
-use std::io;
-use std::io::prelude::*;
-use crate::commands::parsing::parse_command;
-use crate::game_execution::{output_from_command, update_board_from_command, is_board_valid};
 
 fn main() {
     let stdin = io::stdin();

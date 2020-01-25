@@ -1,10 +1,11 @@
-use crate::commands::parsing::ParsingError::{BadPlaceParameters, UnrecognisedCommand};
+use std::fmt::{Error, Formatter};
+
 use crate::commands::Command::*;
-use crate::geo::RelativeDirection::*;
+use crate::commands::parsing::ParsingError::{BadPlaceParameters, UnrecognisedCommand};
 use crate::geo::{Direction, Vector};
+use crate::geo::RelativeDirection::*;
 
 use super::Command;
-use std::fmt::{Error, Formatter};
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum ParsingError {
@@ -73,9 +74,9 @@ fn parse_direction(raw_direction: &str) -> Option<Direction> {
 
 #[cfg(test)]
 mod test {
+    use crate::commands::Command::*;
     use crate::commands::parsing::parse_command;
     use crate::commands::parsing::ParsingError::*;
-    use crate::commands::Command::*;
     use crate::geo::Direction::*;
     use crate::geo::RelativeDirection::*;
     use crate::geo::Vector;
