@@ -28,7 +28,9 @@ pub fn output_from_command(board: &Board, command: &Command) -> Option<String> {
 }
 
 pub fn is_board_valid(board: &Board) -> bool {
-    board.robot.map_or(true, |robot| board.bounds.contains(&robot.location))
+    board
+        .robot
+        .map_or(true, |robot| board.bounds.contains(&robot.location))
 }
 
 #[cfg(test)]
@@ -38,7 +40,7 @@ mod test {
     use crate::game_model::{Board, Robot};
     use crate::geo::Direction::*;
     use crate::geo::RelativeDirection::Left;
-    use crate::geo::{Vector, Square};
+    use crate::geo::{Square, Vector};
 
     const EMPTY_BOARD: Board = Board {
         bounds: Square {
@@ -50,8 +52,8 @@ mod test {
 
     mod update_board {
 
-        use super::EMPTY_BOARD;
         use super::super::update_board_from_command;
+        use super::EMPTY_BOARD;
         use crate::commands::Command;
         use crate::game_model::{Board, Robot};
         use crate::geo::Direction::*;
@@ -170,13 +172,12 @@ mod test {
                 update_board_from_command(&initial_board, &command)
             )
         }
-
     }
 
     mod output {
 
-        use super::EMPTY_BOARD;
         use super::super::output_from_command;
+        use super::EMPTY_BOARD;
         use crate::commands::Command;
         use crate::game_model::{Board, Robot};
         use crate::geo::Direction::*;
@@ -190,10 +191,7 @@ mod test {
             let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, 1), North));
             let expected_output = None;
 
-            assert_eq!(
-                expected_output,
-                output_from_command(&board, &command)
-            )
+            assert_eq!(expected_output, output_from_command(&board, &command))
         }
 
         #[test]
@@ -203,10 +201,7 @@ mod test {
             let board = EMPTY_BOARD;
             let expected_output = None;
 
-            assert_eq!(
-                expected_output,
-                output_from_command(&board, &command)
-            )
+            assert_eq!(expected_output, output_from_command(&board, &command))
         }
 
         #[test]
@@ -216,17 +211,14 @@ mod test {
             let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, 1), North));
             let expected_output = Some("1,1,NORTH".to_string());
 
-            assert_eq!(
-                expected_output,
-                output_from_command(&board, &command)
-            )
+            assert_eq!(expected_output, output_from_command(&board, &command))
         }
     }
 
     mod validate {
 
-        use super::EMPTY_BOARD;
         use super::super::is_board_valid;
+        use super::EMPTY_BOARD;
         use crate::commands::Command;
         use crate::game_model::{Board, Robot};
         use crate::geo::Direction::*;
@@ -238,10 +230,7 @@ mod test {
             let board = EMPTY_BOARD;
             let expected_valid = true;
 
-            assert_eq!(
-                expected_valid,
-                is_board_valid(&board),
-            )
+            assert_eq!(expected_valid, is_board_valid(&board),)
         }
 
         #[test]
@@ -249,10 +238,7 @@ mod test {
             let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, 1), North));
             let expected_valid = true;
 
-            assert_eq!(
-                expected_valid,
-                is_board_valid(&board),
-            )
+            assert_eq!(expected_valid, is_board_valid(&board),)
         }
 
         #[test]
@@ -260,10 +246,7 @@ mod test {
             let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, 5), North));
             let expected_valid = false;
 
-            assert_eq!(
-                expected_valid,
-                is_board_valid(&board),
-            )
+            assert_eq!(expected_valid, is_board_valid(&board),)
         }
 
         #[test]
@@ -271,10 +254,7 @@ mod test {
             let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, -1), North));
             let expected_valid = false;
 
-            assert_eq!(
-                expected_valid,
-                is_board_valid(&board),
-            )
+            assert_eq!(expected_valid, is_board_valid(&board),)
         }
 
         #[test]
@@ -282,10 +262,7 @@ mod test {
             let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(5, 1), North));
             let expected_valid = false;
 
-            assert_eq!(
-                expected_valid,
-                is_board_valid(&board),
-            )
+            assert_eq!(expected_valid, is_board_valid(&board),)
         }
 
         #[test]
@@ -293,11 +270,7 @@ mod test {
             let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(-1, 1), North));
             let expected_valid = false;
 
-            assert_eq!(
-                expected_valid,
-                is_board_valid(&board),
-            )
+            assert_eq!(expected_valid, is_board_valid(&board),)
         }
-
     }
 }

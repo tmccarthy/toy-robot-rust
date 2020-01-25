@@ -12,9 +12,9 @@ pub enum RelativeDirection {
     Right,
 }
 
-use RelativeDirection::{*};
-use Direction::{*};
-use std::fmt::{Formatter, Error};
+use std::fmt::{Error, Formatter};
+use Direction::*;
+use RelativeDirection::*;
 
 impl Direction {
     pub fn rotate(&self, relative_direction: &RelativeDirection) -> Direction {
@@ -33,12 +33,16 @@ impl Direction {
 
 impl std::fmt::Display for Direction {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        write!(f, "{}", match self {
-            North => "North",
-            South => "South",
-            East => "East",
-            West => "West",
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                North => "North",
+                South => "South",
+                East => "East",
+                West => "West",
+            }
+        )
     }
 }
 
@@ -49,20 +53,30 @@ pub struct Vector {
 }
 
 impl Vector {
-
     pub fn new(x: i16, y: i16) -> Vector {
         Vector { x, y }
     }
 
     pub fn translate(&self, direction: Direction) -> Vector {
         match direction {
-            North => Vector { y: self.y + 1, ..(*self) },
-            South => Vector { y: self.y - 1, ..(*self) },
-            East => Vector { x: self.x + 1, ..(*self) },
-            West => Vector { x: self.x - 1, ..(*self) },
+            North => Vector {
+                y: self.y + 1,
+                ..(*self)
+            },
+            South => Vector {
+                y: self.y - 1,
+                ..(*self)
+            },
+            East => Vector {
+                x: self.x + 1,
+                ..(*self)
+            },
+            West => Vector {
+                x: self.x - 1,
+                ..(*self)
+            },
         }
     }
-
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -72,9 +86,8 @@ pub struct Square {
 }
 
 impl Square {
-
     pub fn with_corners(corner1: &Vector, corner2: &Vector) -> Square {
-        use std::cmp::{min, max};
+        use std::cmp::{max, min};
 
         let x_min = min(corner1.x, corner2.x);
         let x_max = max(corner1.x, corner2.x);
@@ -88,17 +101,19 @@ impl Square {
     }
 
     pub fn contains(self: Square, vector: &Vector) -> bool {
-        vector.x >= self.bottom_left.x && vector.x <= self.top_right.x && vector.y >= self.bottom_left.y && vector.y <= self.top_right.y
+        vector.x >= self.bottom_left.x
+            && vector.x <= self.top_right.x
+            && vector.y >= self.bottom_left.y
+            && vector.y <= self.top_right.y
     }
-
 }
 
 #[cfg(test)]
 mod tests {
 
     mod rotate {
-        use crate::geo::Direction::{*};
-        use crate::geo::RelativeDirection::{*};
+        use crate::geo::Direction::*;
+        use crate::geo::RelativeDirection::*;
 
         #[test]
         fn rotate_north_left_gives_west() {
@@ -139,12 +154,11 @@ mod tests {
         fn rotate_west_right_gives_north() {
             assert_eq!(West.rotate(&Right), North)
         }
-
     }
 
     mod translate {
 
-        use crate::geo::Direction::{*};
+        use crate::geo::Direction::*;
         use crate::geo::Vector;
 
         #[test]
@@ -166,11 +180,10 @@ mod tests {
         fn translate_west() {
             assert_eq!(Vector::new(2, 2).translate(West), Vector::new(1, 2))
         }
-
     }
 
     mod direction_display {
-        use crate::geo::Direction::{*};
+        use crate::geo::Direction::*;
 
         #[test]
         fn display_north() {
@@ -191,12 +204,11 @@ mod tests {
         fn display_west() {
             assert_eq!("West", format!("{}", West))
         }
-
     }
 
     mod square_contains {
-        use crate::geo::Vector;
         use crate::geo::Square;
+        use crate::geo::Vector;
 
         #[test]
         fn contains_within_square() {
@@ -237,7 +249,5 @@ mod tests {
 
             assert_eq!(false, square.contains(&vector));
         }
-
     }
-
 }
