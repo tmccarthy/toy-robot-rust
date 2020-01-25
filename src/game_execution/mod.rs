@@ -40,8 +40,8 @@ pub fn is_board_valid(board: &Board) -> bool {
 mod test {
     
     use crate::game_model::{Board};
-    use crate::geo::{Square, Vector};
-    use std::collections::HashSet;
+    use crate::geo::{Vector};
+    
 
     fn empty_board() -> Board {
         Board::empty_with_corner(&Vector::new(4, 4))
