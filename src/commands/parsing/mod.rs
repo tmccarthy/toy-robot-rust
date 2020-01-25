@@ -1,9 +1,9 @@
 use std::fmt::{Error, Formatter};
 
-use crate::commands::Command::*;
 use crate::commands::parsing::ParsingError::{BadPlaceParameters, UnrecognisedCommand};
-use crate::geo::{Direction, Vector};
+use crate::commands::Command::*;
 use crate::geo::RelativeDirection::*;
+use crate::geo::{Direction, Vector};
 
 use super::Command;
 
@@ -75,9 +75,9 @@ fn parse_direction(raw_direction: &str) -> Option<Direction> {
 
 #[cfg(test)]
 mod test {
-    use crate::commands::Command::*;
     use crate::commands::parsing::parse_command;
     use crate::commands::parsing::ParsingError::*;
+    use crate::commands::Command::*;
     use crate::geo::Direction::*;
     use crate::geo::RelativeDirection::*;
     use crate::geo::Vector;
@@ -169,6 +169,9 @@ mod test {
 
     #[test]
     fn parse_unrecognised() {
-        assert_eq!(parse_command("asdf"), Err(UnrecognisedCommand("asdf".to_string())))
+        assert_eq!(
+            parse_command("asdf"),
+            Err(UnrecognisedCommand("asdf".to_string()))
+        )
     }
 }

@@ -16,7 +16,7 @@ pub fn update_board_from_command(board: &Board, command: &Command) -> Board {
         }
         (Some(robot), Command::PlaceObject) => {
             board.with_obstacle_at(robot.location.translate(robot.facing))
-        },
+        }
         (Some(_robot), Command::Report) => board.clone(),
     };
 }
@@ -31,17 +31,17 @@ pub fn output_from_command(board: &Board, command: &Command) -> Option<String> {
 }
 
 pub fn is_board_valid(board: &Board) -> bool {
-    board
-        .robot
-        .map_or(true, |robot| board.bounds.contains(&robot.location) && !board.obstacle_locations.contains(&robot.location))
+    board.robot.map_or(true, |robot| {
+        board.bounds.contains(&robot.location)
+            && !board.obstacle_locations.contains(&robot.location)
+    })
 }
 
 #[cfg(test)]
 mod test {
-    
-    use crate::game_model::{Board};
-    use crate::geo::{Vector};
-    
+
+    use crate::game_model::Board;
+    use crate::geo::Vector;
 
     fn empty_board() -> Board {
         Board::empty_with_corner(&Vector::new(4, 4))
@@ -49,13 +49,13 @@ mod test {
 
     mod update_board {
         use crate::commands::Command;
-        use crate::game_model::{Robot};
+        use crate::game_model::Robot;
         use crate::geo::Direction::*;
         use crate::geo::RelativeDirection::Left;
         use crate::geo::Vector;
 
-        use super::empty_board;
         use super::super::update_board_from_command;
+        use super::empty_board;
 
         #[test]
         fn update_board_move_no_robot() {
@@ -188,8 +188,7 @@ mod test {
             let command = Command::PlaceObject;
 
             let initial_board = empty_board().with_robot(Robot::new(Vector::new(1, 1), North));
-            let expected_board = initial_board
-                .with_obstacle_at(Vector::new(1, 2));
+            let expected_board = initial_board.with_obstacle_at(Vector::new(1, 2));
 
             assert_eq!(
                 expected_board,
@@ -205,26 +204,24 @@ mod test {
                 .with_robot(Robot::new(Vector::new(3, 3), South))
                 .with_obstacle_at(Vector::new(1, 2));
 
-            let expected_board = initial_board
-                .with_obstacle_at(Vector::new(3, 2));
+            let expected_board = initial_board.with_obstacle_at(Vector::new(3, 2));
 
             assert_eq!(
                 expected_board,
                 update_board_from_command(&initial_board, &command)
             )
         }
-
     }
 
     mod output {
         use crate::commands::Command;
-        use crate::game_model::{Robot};
+        use crate::game_model::Robot;
         use crate::geo::Direction::*;
-        
+
         use crate::geo::Vector;
 
-        use super::empty_board;
         use super::super::output_from_command;
+        use super::empty_board;
 
         #[test]
         fn output_move_with_robot() {
@@ -258,14 +255,14 @@ mod test {
     }
 
     mod validate {
-        
-        use crate::game_model::{Robot};
+
+        use crate::game_model::Robot;
         use crate::geo::Direction::*;
-        
+
         use crate::geo::Vector;
 
-        use super::empty_board;
         use super::super::is_board_valid;
+        use super::empty_board;
 
         #[test]
         fn validate_no_robot() {
