@@ -1,4 +1,5 @@
 use crate::geo::{Direction, Square, Vector};
+use std::collections::HashSet;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub struct Robot {
@@ -26,10 +27,11 @@ impl Robot {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Board {
     pub bounds: Square,
     pub robot: Option<Robot>,
+    pub obstacle_locations: HashSet<Vector>,
 }
 
 impl Board {
@@ -37,13 +39,26 @@ impl Board {
         Board {
             bounds: Square::with_corners(&Vector::new(0, 0), corner),
             robot: None,
+            obstacle_locations: HashSet::new(),
         }
     }
 
-    pub fn with_robot(self: Board, robot: Robot) -> Board {
+    pub fn with_robot(self: &Board, robot: Robot) -> Board {
         Board {
+            bounds: self.bounds,
             robot: Some(robot),
-            ..self
+            obstacle_locations: self.obstacle_locations.clone(),
+        }
+    }
+
+    pub fn with_obstacle_at(self: &Board, obstacle_location: Vector) -> Board {
+        let mut new_obstacle_locations = self.obstacle_locations.clone();
+
+        new_obstacle_locations.insert(obstacle_location);
+
+        Board {
+            obstacle_locations: new_obstacle_locations,
+            ..*self
         }
     }
 }

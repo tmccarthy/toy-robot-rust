@@ -7,15 +7,17 @@ pub fn update_board_from_command(board: &Board, command: &Command) -> Board {
             location: *location,
             facing: *facing,
         }),
-        (None, _) => *board,
+        (None, _) => board.clone(),
         (Some(robot), Command::Move) => {
             board.with_robot(robot.with_position(robot.location.translate(robot.facing)))
         }
         (Some(robot), Command::Rotate(relative_direction)) => {
             board.with_robot(robot.with_facing(robot.facing.rotate(relative_direction)))
         }
-        (Some(robot), Command::PlaceObject) => unimplemented!(),
-        (Some(_robot), Command::Report) => *board,
+        (Some(robot), Command::PlaceObject) => {
+            board.with_obstacle_at(robot.location.translate(robot.facing))
+        },
+        (Some(_robot), Command::Report) => board.clone(),
     };
 }
 
@@ -39,16 +41,11 @@ mod test {
     
     use crate::game_model::{Board};
     use crate::geo::{Square, Vector};
-    
-    
+    use std::collections::HashSet;
 
-    const EMPTY_BOARD: Board = Board {
-        bounds: Square {
-            bottom_left: Vector { x: 0, y: 0 },
-            top_right: Vector { x: 4, y: 4 },
-        },
-        robot: None,
-    };
+    fn empty_board() -> Board {
+        Board::empty_with_corner(&Vector::new(4, 4))
+    }
 
     mod update_board {
         use crate::commands::Command;
@@ -57,15 +54,15 @@ mod test {
         use crate::geo::RelativeDirection::Left;
         use crate::geo::Vector;
 
-        use super::EMPTY_BOARD;
+        use super::empty_board;
         use super::super::update_board_from_command;
 
         #[test]
         fn update_board_move_no_robot() {
             let command = Command::Move;
 
-            let initial_board = EMPTY_BOARD;
-            let expected_board = initial_board;
+            let initial_board = empty_board();
+            let expected_board = empty_board();
 
             assert_eq!(
                 expected_board,
@@ -77,7 +74,7 @@ mod test {
         fn update_board_move_with_robot() {
             let command = Command::Move;
 
-            let initial_board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, 1), North));
+            let initial_board = empty_board().with_robot(Robot::new(Vector::new(1, 1), North));
             let expected_board = initial_board.with_robot(Robot::new(Vector::new(1, 2), North));
 
             assert_eq!(
@@ -90,7 +87,7 @@ mod test {
         fn update_board_move_with_robot_on_edge() {
             let command = Command::Move;
 
-            let initial_board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(0, 0), West));
+            let initial_board = empty_board().with_robot(Robot::new(Vector::new(0, 0), West));
             let expected_board = initial_board.with_robot(Robot::new(Vector::new(-1, 0), West));
 
             assert_eq!(
@@ -103,8 +100,8 @@ mod test {
         fn update_board_rotate_no_robot() {
             let command = Command::Rotate(Left);
 
-            let initial_board = EMPTY_BOARD;
-            let expected_board = initial_board;
+            let initial_board = empty_board();
+            let expected_board = empty_board();
 
             assert_eq!(
                 expected_board,
@@ -116,7 +113,7 @@ mod test {
         fn update_board_rotate_with_robot() {
             let command = Command::Rotate(Left);
 
-            let initial_board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, 1), North));
+            let initial_board = empty_board().with_robot(Robot::new(Vector::new(1, 1), North));
             let expected_board = initial_board.with_robot(Robot::new(Vector::new(1, 1), West));
 
             assert_eq!(
@@ -132,7 +129,7 @@ mod test {
                 facing: North,
             };
 
-            let initial_board = EMPTY_BOARD;
+            let initial_board = empty_board();
             let expected_board = initial_board.with_robot(Robot::new(Vector::new(1, 1), North));
 
             assert_eq!(
@@ -148,7 +145,7 @@ mod test {
                 facing: North,
             };
 
-            let initial_board = EMPTY_BOARD;
+            let initial_board = empty_board();
             let expected_board = initial_board.with_robot(Robot::new(Vector::new(-1, -1), North));
 
             assert_eq!(
@@ -164,7 +161,7 @@ mod test {
                 facing: North,
             };
 
-            let initial_board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(4, 4), South));
+            let initial_board = empty_board().with_robot(Robot::new(Vector::new(4, 4), South));
             let expected_board = initial_board.with_robot(Robot::new(Vector::new(1, 1), North));
 
             assert_eq!(
@@ -172,6 +169,51 @@ mod test {
                 update_board_from_command(&initial_board, &command)
             )
         }
+
+        #[test]
+        fn update_board_place_object_no_robot() {
+            let command = Command::PlaceObject;
+
+            let initial_board = empty_board();
+            let expected_board = empty_board();
+
+            assert_eq!(
+                expected_board,
+                update_board_from_command(&initial_board, &command)
+            )
+        }
+
+        #[test]
+        fn update_board_place_object_with_robot() {
+            let command = Command::PlaceObject;
+
+            let initial_board = empty_board().with_robot(Robot::new(Vector::new(1, 1), North));
+            let expected_board = initial_board
+                .with_obstacle_at(Vector::new(1, 2));
+
+            assert_eq!(
+                expected_board,
+                update_board_from_command(&initial_board, &command)
+            )
+        }
+
+        #[test]
+        fn update_board_place_object_with_robot_and_obstacle() {
+            let command = Command::PlaceObject;
+
+            let initial_board = empty_board()
+                .with_robot(Robot::new(Vector::new(3, 3), South))
+                .with_obstacle_at(Vector::new(1, 2));
+
+            let expected_board = initial_board
+                .with_obstacle_at(Vector::new(3, 2));
+
+            assert_eq!(
+                expected_board,
+                update_board_from_command(&initial_board, &command)
+            )
+        }
+
     }
 
     mod output {
@@ -181,14 +223,14 @@ mod test {
         
         use crate::geo::Vector;
 
-        use super::EMPTY_BOARD;
+        use super::empty_board;
         use super::super::output_from_command;
 
         #[test]
         fn output_move_with_robot() {
             let command = Command::Move;
 
-            let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, 1), North));
+            let board = empty_board().with_robot(Robot::new(Vector::new(1, 1), North));
             let expected_output = None;
 
             assert_eq!(expected_output, output_from_command(&board, &command))
@@ -198,7 +240,7 @@ mod test {
         fn output_report_with_no_robot() {
             let command = Command::Report;
 
-            let board = EMPTY_BOARD;
+            let board = empty_board();
             let expected_output = None;
 
             assert_eq!(expected_output, output_from_command(&board, &command))
@@ -208,7 +250,7 @@ mod test {
         fn output_report_with_robot() {
             let command = Command::Report;
 
-            let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, 1), North));
+            let board = empty_board().with_robot(Robot::new(Vector::new(1, 1), North));
             let expected_output = Some("1,1,NORTH".to_string());
 
             assert_eq!(expected_output, output_from_command(&board, &command))
@@ -222,12 +264,12 @@ mod test {
         
         use crate::geo::Vector;
 
-        use super::EMPTY_BOARD;
+        use super::empty_board;
         use super::super::is_board_valid;
 
         #[test]
         fn validate_no_robot() {
-            let board = EMPTY_BOARD;
+            let board = empty_board();
             let expected_valid = true;
 
             assert_eq!(expected_valid, is_board_valid(&board),)
@@ -235,7 +277,7 @@ mod test {
 
         #[test]
         fn validate_with_robot() {
-            let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, 1), North));
+            let board = empty_board().with_robot(Robot::new(Vector::new(1, 1), North));
             let expected_valid = true;
 
             assert_eq!(expected_valid, is_board_valid(&board),)
@@ -243,7 +285,7 @@ mod test {
 
         #[test]
         fn validate_with_robot_out_of_bounds_north() {
-            let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, 5), North));
+            let board = empty_board().with_robot(Robot::new(Vector::new(1, 5), North));
             let expected_valid = false;
 
             assert_eq!(expected_valid, is_board_valid(&board),)
@@ -251,7 +293,7 @@ mod test {
 
         #[test]
         fn validate_with_robot_out_of_bounds_south() {
-            let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(1, -1), North));
+            let board = empty_board().with_robot(Robot::new(Vector::new(1, -1), North));
             let expected_valid = false;
 
             assert_eq!(expected_valid, is_board_valid(&board),)
@@ -259,7 +301,7 @@ mod test {
 
         #[test]
         fn validate_with_robot_out_of_bounds_east() {
-            let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(5, 1), North));
+            let board = empty_board().with_robot(Robot::new(Vector::new(5, 1), North));
             let expected_valid = false;
 
             assert_eq!(expected_valid, is_board_valid(&board),)
@@ -267,7 +309,7 @@ mod test {
 
         #[test]
         fn validate_with_robot_out_of_bounds_west() {
-            let board = EMPTY_BOARD.with_robot(Robot::new(Vector::new(-1, 1), North));
+            let board = empty_board().with_robot(Robot::new(Vector::new(-1, 1), North));
             let expected_valid = false;
 
             assert_eq!(expected_valid, is_board_valid(&board),)

@@ -47,7 +47,7 @@ impl std::fmt::Display for Direction {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Eq, PartialEq, Hash, Copy, Clone)]
 pub struct Vector {
     pub x: i16,
     pub y: i16,
