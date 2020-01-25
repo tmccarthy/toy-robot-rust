@@ -23,7 +23,7 @@ pub fn parse(input: &str) -> Result<Command, ParsingError> {
 
     const PLACE_PREFIX: &str = "place ";
 
-    if (lowercase_input.starts_with(PLACE_PREFIX)) {
+    if lowercase_input.starts_with(PLACE_PREFIX) {
         parse_place_command(input[(PLACE_PREFIX.len())..].as_ref())
     } else {
         Err(UnrecognisedCommand(input))
