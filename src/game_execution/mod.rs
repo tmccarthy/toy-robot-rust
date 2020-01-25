@@ -1,6 +1,6 @@
 use crate::commands::Command;
 use crate::game_model::{Board, Robot};
-use crate::geo::Vector;
+use crate::geo::{Vector, Direction};
 
 pub fn update_board_from_command(board: &Board, command: &Command) -> Board {
     return match (board.robot, &command) {
@@ -40,7 +40,12 @@ fn map_for(board: &Board) -> String {
             let our_vector = Vector::new(x, y);
 
             if board.robot.map_or_else(|| false, |r| r.location == our_vector) {
-                s.push('0');
+                s.push(match board.robot.unwrap().facing {
+                    Direction::North => '^',
+                    Direction::South => 'v',
+                    Direction::East => '>',
+                    Direction::West => '<',
+                });
             } else if board.obstacle_locations.contains(&our_vector) {
                 s.push('X');
             } else {
@@ -289,7 +294,7 @@ mod test {
             let expected_output = Some("0000X\n\
                                         00000\n\
                                         0X000\n\
-                                        00000\n\
+                                        0^000\n\
                                         00000".to_string());
 
             assert_eq!(expected_output, output_from_command(&board, &command))
