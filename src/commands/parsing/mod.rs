@@ -1,7 +1,7 @@
-use crate::commands::Command::{*};
 use crate::commands::parsing::ParsingError::{BadPlaceParameters, UnrecognisedCommand};
+use crate::commands::Command::*;
+use crate::geo::RelativeDirection::*;
 use crate::geo::{Direction, Vector};
-use crate::geo::RelativeDirection::{*};
 
 use super::Command;
 
@@ -18,7 +18,7 @@ pub fn parse(input: &str) -> Result<Command, ParsingError> {
         "move" => return Ok(Move),
         "left" => return Ok(Rotate(Left)),
         "right" => return Ok(Rotate(Right)),
-        _ => {},
+        _ => {}
     }
 
     const PLACE_PREFIX: &str = "place ";
@@ -35,20 +35,17 @@ fn parse_place_command(parameters: &str) -> Result<Command, ParsingError> {
 
     match split.as_slice() {
         &[raw_x, raw_y, raw_direction] => {
-            let maybe_location: Option<Vector> = raw_x.parse::<i16>().and_then(|x| {
-                raw_y.parse::<i16>().map(|y| {
-                    Vector { x, y }
-                })
-            }).ok();
+            let maybe_location: Option<Vector> = raw_x
+                .parse::<i16>()
+                .and_then(|x| raw_y.parse::<i16>().map(|y| Vector { x, y }))
+                .ok();
 
             let maybe_facing: Option<Direction> = parse_direction(raw_direction);
 
-            maybe_location.and_then(|location| {
-                maybe_facing.map(|facing| {
-                    Command::Place { location, facing }
-                })
-            }).ok_or(BadPlaceParameters(parameters))
-        },
+            maybe_location
+                .and_then(|location| maybe_facing.map(|facing| Command::Place { location, facing }))
+                .ok_or(BadPlaceParameters(parameters))
+        }
         _ => Err(BadPlaceParameters(parameters)),
     }
 }
@@ -59,18 +56,18 @@ fn parse_direction(raw_direction: &str) -> Option<Direction> {
         "south" => Some(Direction::South),
         "east" => Some(Direction::East),
         "west" => Some(Direction::West),
-        _ => None
+        _ => None,
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::commands::Command::{*};
     use crate::commands::parsing::parse;
-    use crate::commands::parsing::ParsingError::{*};
-    use crate::geo::RelativeDirection::{*};
+    use crate::commands::parsing::ParsingError::*;
+    use crate::commands::Command::*;
+    use crate::geo::Direction::*;
+    use crate::geo::RelativeDirection::*;
     use crate::geo::Vector;
-    use crate::geo::Direction::{*};
 
     #[test]
     fn parse_move() {
@@ -99,22 +96,46 @@ mod test {
 
     #[test]
     fn parse_place_facing_north() {
-        assert_eq!(parse("Place 1,1,North"), Ok(Place { location: Vector { x: 1, y: 1 }, facing: North }))
+        assert_eq!(
+            parse("Place 1,1,North"),
+            Ok(Place {
+                location: Vector { x: 1, y: 1 },
+                facing: North
+            })
+        )
     }
 
     #[test]
     fn parse_place_facing_south() {
-        assert_eq!(parse("Place 1,1,South"), Ok(Place { location: Vector { x: 1, y: 1 }, facing: South }))
+        assert_eq!(
+            parse("Place 1,1,South"),
+            Ok(Place {
+                location: Vector { x: 1, y: 1 },
+                facing: South
+            })
+        )
     }
 
     #[test]
     fn parse_place_facing_east() {
-        assert_eq!(parse("Place 1,1,East"), Ok(Place { location: Vector { x: 1, y: 1 }, facing: East }))
+        assert_eq!(
+            parse("Place 1,1,East"),
+            Ok(Place {
+                location: Vector { x: 1, y: 1 },
+                facing: East
+            })
+        )
     }
 
     #[test]
     fn parse_place_facing_west() {
-        assert_eq!(parse("Place 1,1,West"), Ok(Place { location: Vector { x: 1, y: 1 }, facing: West }))
+        assert_eq!(
+            parse("Place 1,1,West"),
+            Ok(Place {
+                location: Vector { x: 1, y: 1 },
+                facing: West
+            })
+        )
     }
 
     #[test]

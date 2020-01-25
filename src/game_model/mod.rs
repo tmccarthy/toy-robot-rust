@@ -1,4 +1,4 @@
-use crate::geo::{Vector, Direction};
+use crate::geo::{Direction, Vector};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub struct Robot {
@@ -27,13 +27,17 @@ pub struct Board {
 }
 
 impl Board {
-
     pub fn empty_with_corner(corner: Vector) -> Board {
-        Board { corner, robot: None }
+        Board {
+            corner,
+            robot: None,
+        }
     }
 
     pub fn with_robot(self: Board, robot: Robot) -> Board {
-        Board { robot: Some(robot), ..self }
+        Board {
+            robot: Some(robot),
+            ..self
+        }
     }
-
 }

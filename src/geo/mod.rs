@@ -14,6 +14,7 @@ pub enum RelativeDirection {
 
 use RelativeDirection::{*};
 use Direction::{*};
+use std::fmt::{Formatter, Error};
 
 impl Direction {
     pub fn rotate(&self, relative_direction: &RelativeDirection) -> Direction {
@@ -27,6 +28,17 @@ impl Direction {
             (South, Right) => West,
             (West, Right) => North,
         }
+    }
+}
+
+impl std::fmt::Display for Direction {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        write!(f, "{}", match self {
+            North => "North",
+            South => "South",
+            East => "East",
+            West => "West",
+        })
     }
 }
 
@@ -125,6 +137,31 @@ mod tests {
         #[test]
         fn translate_west() {
             assert_eq!(Vector::new(2, 2).translate(West), Vector::new(1, 2))
+        }
+
+    }
+
+    mod display {
+        use crate::geo::Direction::{*};
+
+        #[test]
+        fn display_north() {
+            assert_eq!("North", format!("{}", North))
+        }
+
+        #[test]
+        fn display_east() {
+            assert_eq!("East", format!("{}", East))
+        }
+
+        #[test]
+        fn display_south() {
+            assert_eq!("South", format!("{}", South))
+        }
+
+        #[test]
+        fn display_west() {
+            assert_eq!("West", format!("{}", West))
         }
 
     }
